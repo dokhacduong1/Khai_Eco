@@ -46,7 +46,7 @@ try {
                     $subtotal = $price * $item['Quantity'];
                     $total += $subtotal;
                 ?>
-                <div class="card mb-3">
+                <div class="card mb-3 shadow-sm">
                     <div class="row g-0">
                         <div class="col-md-3">
                             <img src="<?= $item['ImageURL'] ? 'uploads/products/'.basename($item['ImageURL']) : 'assets/no-image.jpg' ?>" 
@@ -63,7 +63,7 @@ try {
                                             <?= number_format($price,0,'',',') ?> VNĐ
                                         </p>
                                         <?php if ($item['DiscountPercent'] > 0): ?>
-                                            <del class="text-muted">$<?= number_format($item['Price'], 0,'',',') ?>VNĐ</del>
+                                            <del class="text-muted"><?= number_format($item['Price'], 0,'',',') ?> VNĐ</del>
                                         <?php endif ?>
                                     </div>
                                     
@@ -99,7 +99,7 @@ try {
             </div>
             
             <div class="col-lg-4">
-                <div class="card">
+                <div class="card shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title">Tổng cộng</h5>
                         <dl class="row">

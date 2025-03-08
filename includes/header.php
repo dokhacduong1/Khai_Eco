@@ -4,6 +4,14 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once 'config/database.php';
 $settings = $pdo->query("SELECT KeyName, KeyValue FROM Settings")->fetchAll(PDO::FETCH_KEY_PAIR);
+
+// Lấy số lượng sản phẩm trong giỏ hàng
+$cartItemCount = 0;
+if (isset($_SESSION['user_id'])) {
+    $stmt = $pdo->prepare("SELECT SUM(Quantity) FROM Cart WHERE UserID = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $cartItemCount = (int) $stmt->fetchColumn();
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -14,7 +22,6 @@ $settings = $pdo->query("SELECT KeyName, KeyValue FROM Settings")->fetchAll(PDO:
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="/webdungai/assets/css/style.css">
-
 </head>
 <body>
     <!-- Navbar -->
@@ -28,9 +35,7 @@ $settings = $pdo->query("SELECT KeyName, KeyValue FROM Settings")->fetchAll(PDO:
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 col-1">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span>Sản phẩm</span>
-                            <i class="fas fa-chevron-down" style="font-size:12px"></i>
-                     
+                            Danh mục
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <?php
@@ -73,7 +78,7 @@ $settings = $pdo->query("SELECT KeyName, KeyValue FROM Settings")->fetchAll(PDO:
                 </ul>
 
                 <!-- Search Form -->
-                <form class="d-flex mx-auto col-9" action="search.php" method="GET">
+                <form class="d-flex mx-auto col-8" action="search.php" method="GET">
                     <div class="input-group">
                         <select class="form-select" name="category" style="max-width: 200px;">
                             <option value="">Tất cả danh mục</option>
@@ -89,9 +94,14 @@ $settings = $pdo->query("SELECT KeyName, KeyValue FROM Settings")->fetchAll(PDO:
                 </form>
 
                 <!-- User Menu -->
-                <div class="d-flex align-items-center col-1">
+                <div class="d-flex align-items-center gap-2">
                     <?php if(isset($_SESSION['user_id'])): ?>
-                        <a href="cart.php" class="btn btn-light me-2"><i class="fas fa-shopping-cart"></i></a>
+                        <a href="cart.php" class="btn btn-light me-2 position-relative">
+                            <i class="fas fa-shopping-cart"></i>
+                            <?php if ($cartItemCount > 0): ?>
+                                <span class="badge bg-danger position-absolute top-0 start-100 translate-middle"><?= $cartItemCount ?></span>
+                            <?php endif; ?>
+                        </a>
                         <div class="dropdown">
                             <button class="btn btn-light dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-user"></i>

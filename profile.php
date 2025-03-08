@@ -99,7 +99,7 @@ include 'includes/header.php';
             <div class="card mb-4">
                 <div class="card-body text-center">
                     <img src="https://www.phanmemninja.com/wp-content/uploads/2023/06/avatar-facebook-nam-vo-danh.jpeg" alt="avatar"
-                        class="rounded-circle img-fluid" style="width: 150px;">
+                        class="rounded-circle img-fluid">
                     <h5 class="my-3"><?= htmlspecialchars($user['FullName']) ?></h5>
                     <p class="text-muted mb-1">Thành viên từ: <?= 
                         date('d/m/Y', strtotime($user['CreatedAt'])) ?></p>
