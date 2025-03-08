@@ -1,7 +1,6 @@
 <?php
 require_once 'config/database.php';
 
-
 // Lấy dữ liệu cho trang chủ
 $featured_products = $pdo->query("
     SELECT p.*, c.Name as CategoryName, pi.ImageURL 
@@ -34,7 +33,7 @@ if (isset($_SESSION['user_id'])) {
         WHERE o.UserID = ?
         GROUP BY p.ID
         ORDER BY COUNT(p.ID) DESC
-        LIMIT 4
+        LIMIT 8
     ");
     $recommended->execute([$_SESSION['user_id']]);
     $recommended_products = $recommended->fetchAll();
@@ -45,249 +44,226 @@ if (isset($_SESSION['user_id'])) {
         LEFT JOIN (
             SELECT ProductID, MIN(ImageURL) as ImageURL 
             FROM ProductImages 
-            GROUP BY ProductID
+        GROUP BY ProductID
         ) pi ON p.ID = pi.ProductID
         ORDER BY RAND() 
-        LIMIT 4
+        LIMIT 8
     ")->fetchAll();
 }
+
+// Thêm sản phẩm mới nhất
+$newest_products = $pdo->query("
+    SELECT p.*, c.Name as CategoryName, pi.ImageURL 
+    FROM Products p
+    LEFT JOIN Categories c ON p.CategoryID = c.ID
+    LEFT JOIN (
+        SELECT ProductID, MIN(ImageURL) as ImageURL 
+        FROM ProductImages 
+        GROUP BY ProductID
+    ) pi ON p.ID = pi.ProductID
+    ORDER BY p.CreatedAt DESC 
+    LIMIT 4
+")->fetchAll();
 ?>
 
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang chủ - <?= htmlspecialchars($settings['site_title'] ?? 'Ecommerce') ?></title>
-
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        .product-card {
-            transition: transform 0.3s;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-        }
-        .discount-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 2;
-        }
-        .banner-carousel {
-            height: 400px;
-            overflow: hidden;
-        }
-        .banner-carousel img {
-            object-fit: cover;
-            height: 100%;
-            width: 100%;
-        }
-        .banner-carousel {
-            height: 500px;
-            overflow: hidden;
-            position: relative;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .carousel-item {
-            height: 500px;
-            background: #f8f9fa;
-        }
-
-        .carousel-item img {
-            height: 100%;
-            width: 100%;
-            object-fit: cover;
-            object-position: center;
-        }
-
-        .carousel-control-prev,
-        .carousel-control-next {
-            width: 5%;
-            background: rgba(0,0,0,0.3);
-            opacity: 1;
-            transition: all 0.3s ease;
-        }
-
-        .carousel-control-prev:hover,
-        .carousel-control-next:hover {
-            background: rgba(0,0,0,0.5);
-        }
-
-        .carousel-control-prev-icon,
-        .carousel-control-next-icon {
-            width: 2.5rem;
-            height: 2.5rem;
-        }
-
-        .carousel-indicators [data-bs-target] {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin: 0 8px;
-            border: 2px solid #fff;
-            background: transparent;
-            opacity: 1;
-        }
-
-        .carousel-indicators .active {
-            background: #fff;
-        }
-
-        /* Điều chỉnh product card */
-        .product-card {
-            transition: all 0.3s ease;
-            border: 1px solid #eee;
-            overflow: hidden;
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .product-card img {
-            transition: transform 0.3s ease;
-        }
-
-        .product-card:hover img {
-            transform: scale(1.05);
+        .carousel-inner > .carousel-item {
+            transition: transform 0.5s ease-in-out;
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-100 text-gray-800">
     <!-- Header -->
     <?php include 'includes/header.php'; ?>
 
-    <!-- Banner Carousel -->
-    <?php if (!empty($settings['banner_1']) || !empty($settings['banner_2'])): ?>
-    <div class="banner-carousel carousel slide" data-bs-ride="carousel">
-        <!-- Indicators -->
-        <div class="carousel-indicators">
-            <?php if (!empty($settings['banner_1'])): ?>
-                <button type="button" data-bs-target=".banner-carousel" data-bs-slide-to="0" class="active"></button>
-            <?php endif ?>
-            <?php if (!empty($settings['banner_2'])): ?>
-                <button type="button" data-bs-target=".banner-carousel" data-bs-slide-to="1"></button>
-            <?php endif ?>
-        </div>
-
-        <div class="carousel-inner">
-            <?php if (!empty($settings['banner_1'])): ?>
-                <div class="carousel-item active">
-                    <img src="<?= $settings['banner_1'] ?>" class="d-block w-100" alt="Banner 1">
-                </div>
-            <?php endif ?>
-            
-            <?php if (!empty($settings['banner_2'])): ?>
-                <div class="carousel-item">
-                    <img src="<?= $settings['banner_2'] ?>" class="d-block w-100" alt="Banner 2">
-                </div>
-            <?php endif ?>
-        </div>
-
-        <!-- Controls -->
-        <button class="carousel-control-prev" type="button" data-bs-target=".banner-carousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target=".banner-carousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </div>
-    <?php endif ?>
-
-    <!-- Featured Products -->
-    <section class="container my-5">
-        <h3 class="mb-4">Sản phẩm nổi bật</h3>
-        <div class="row g-4">
-            <?php foreach ($featured_products as $product): ?>
-                <div class="col-md-3">
-                    <div class="card product-card h-100">
-                        <?php if($product['DiscountPercent'] > 0): ?>
-                            <span class="discount-badge badge bg-danger">-<?= $product['DiscountPercent'] ?>%</span>
-                        <?php endif ?>
-                        <img src="<?= $product['ImageURL'] ? './uploads/products/' . basename($product['ImageURL']) : '/assets/no-image.jpg' ?>" 
-                            class="card-img-top" 
-                            style="height: 200px; object-fit: cover" 
-                            alt="<?= htmlspecialchars($product['Title']) ?>">
-                        <div class="card-body">
-                            <h5 class="card-title"><?= htmlspecialchars($product['Title']) ?></h5>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <?php if($product['DiscountPercent'] > 0): ?>
-                                    <span class="text-danger fs-5">
-                                        <?= number_format($product['Price'] * (1 - $product['DiscountPercent'] / 100), 0, '', ',') ?> VNĐ
-                                    </span>
-                                    <del class="text-muted"><?= number_format($product['Price'], 0, '', ',') ?>  VNĐ</del>
-                                <?php else: ?>
-                                    <span class="fs-5"><?= number_format($product['Price'], 0,'', ',') ?></span>
-                                <?php endif ?>
-                            </div>
-                            <a href="product.php?id=<?= $product['ID'] ?>" class="btn btn-primary mt-2 w-100">
-                                Xem chi tiết
-                            </a>
+    <!-- Main Container -->
+    <div class="container mx-auto mt-4 px-4">
+        <!-- Hero Banner Carousel -->
+        <?php if (!empty($settings['banner_1']) || !empty($settings['banner_2'])): ?>
+        <div class="mb-5">
+            <div id="hero-carousel" class="relative w-full" data-carousel="static">
+                <div class="relative h-56 overflow-hidden rounded-lg md:h-96">
+                    <?php if (!empty($settings['banner_1'])): ?>
+                        <div class=" duration-700 ease-in-out" data-carousel-item>
+                            <img src="<?= $settings['banner_1'] ?>" class="block w-full h-full object-cover" alt="Banner 1">
+                           
                         </div>
-                    </div>
+                    <?php endif ?>
+                    <?php if (!empty($settings['banner_2'])): ?>
+                        <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                            <img src="<?= $settings['banner_2'] ?>" class="block w-full h-full object-cover" alt="Banner 2">
+                            
+                        </div>
+                    <?php endif ?>
                 </div>
-            <?php endforeach ?>
-        </div>
-    </section>
-
-    <!-- Promotions -->
-    <section class="bg-light py-5">
-        <div class="container">
-            <div class="p-5 mb-4 bg-dark text-white rounded-3">
-                <div class="container-fluid py-5">
-                    <h1 class="display-5 fw-bold"><?= htmlspecialchars($settings['promotion_title'] ?? 'Giảm giá lên đến 50%') ?></h1>
-                    <p class="col-md-8 fs-4"><?= htmlspecialchars($settings['promotion_description'] ?? 'Khuyến mãi đặc biệt trong tháng này') ?></p>
-                    <a class="btn btn-primary btn-lg" href="products.php">Mua ngay</a>
-                </div>
+                <button type="button" class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
+                    <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-black bg-opacity-50 group-hover:bg-opacity-75 focus:ring-4 focus:ring-white focus:outline-none">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        <span class="sr-only">Previous</span>
+                    </span>
+                </button>
+                <button type="button" class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
+                    <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-black bg-opacity-50 group-hover:bg-opacity-75 focus:ring-4 focus:ring-white focus:outline-none">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                        <span class="sr-only">Next</span>
+                    </span>
+                </button>
             </div>
         </div>
-    </section>
+        <?php endif ?>
 
-    <!-- Recommended Products -->
-    <section class="container my-5">
-        <h3 class="mb-4">Gợi ý cho bạn</h3>
-        <div class="row g-4">
-            <?php foreach ($recommended_products as $product): ?>
-                <div class="col-md-3">
-                    <div class="card product-card h-100">
-                    <?php if($product['DiscountPercent'] > 0): ?>
-                            <span class="discount-badge badge bg-danger">-<?= $product['DiscountPercent'] ?>%</span>
+        <!-- Category Highlight -->
+        <section class="mb-5">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">Danh mục nổi bật</h2>
+                <a href="categories.php" class="text-primary-500 hover:text-primary-600 font-semibold">Xem tất cả <i class="fas fa-arrow-right ml-2"></i></a>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <?php foreach (array_slice($categories, 0, 4) as $category): ?>
+                    <a href="category.php?id=<?= $category['ID'] ?>" class="block text-center bg-white rounded-lg shadow hover:shadow-lg transition-shadow duration-200">
+                        <div class="p-4">
+                            <div class="mb-3 text-primary-500">
+                                <i class="fas fa-<?= $category['ID'] % 8 == 0 ? 'tshirt' : ($category['ID'] % 8 == 1 ? 'mobile-alt' : ($category['ID'] % 8 == 2 ? 'laptop' : ($category['ID'] % 8 == 3 ? 'headphones' : ($category['ID'] % 8 == 4 ? 'couch' : ($category['ID'] % 8 == 5 ? 'utensils' : ($category['ID'] % 8 == 6 ? 'baby-carriage' : 'book')))))) ?> fa-3x"></i>
+                            </div>
+                            <h5 class="font-semibold text-lg"><?= htmlspecialchars($category['Name']) ?></h5>
+                        </div>
+                    </a>
+                <?php endforeach ?>
+            </div>
+        </section>
+
+        <!-- Featured Products Section -->
+        <section class="mb-5">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">Sản phẩm nổi bật</h2>
+                <a href="products.php?featured=1" class="text-primary-500 hover:text-primary-600 font-semibold">Xem tất cả <i class="fas fa-arrow-right ml-2"></i></a>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <?php foreach ($featured_products as $product): ?>
+                    <div class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+                        <?php if($product['DiscountPercent'] > 0): ?>
+                            <span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">-<?= $product['DiscountPercent'] ?>%</span>
                         <?php endif ?>
-                    <img src="<?= $product['ImageURL'] ? './uploads/products/' . basename($product['ImageURL']) : '/assets/no-image.jpg' ?>" 
-                        class="card-img-top" 
-                        style="height: 200px; object-fit: cover" 
-                        alt="<?= htmlspecialchars($product['Title']) ?>">
-                        <div class="card-body">
-                            <h5 class="card-title"><?= htmlspecialchars($product['Title']) ?></h5>
-                            <div class="d-flex justify-content-between align-items-center">
+                        <img src="<?= $product['ImageURL'] ? './uploads/products/' . basename($product['ImageURL']) : '/assets/no-image.jpg' ?>" class="w-full h-48 object-cover" alt="<?= htmlspecialchars($product['Title']) ?>">
+                        <div class="p-4">
+                            <div class="text-sm text-gray-500 mb-1"><?= htmlspecialchars($product['CategoryName']) ?></div>
+                            <h5 class="font-semibold text-lg mb-1"><?= htmlspecialchars($product['Title']) ?></h5>
+                            <div class="flex justify-between items-center mb-2">
                                 <?php if($product['DiscountPercent'] > 0): ?>
-                                    <span class="text-danger fs-5">
-                                        <?= number_format($product['Price'] * (1 - $product['DiscountPercent'] / 100), 0, '', ',') ?> VNĐ
-                                    </span>
-                                    <del class="text-muted"><?= number_format($product['Price'], 0, '', ',') ?>  VNĐ</del>
+                                    <div>
+                                        <span class="text-red-500 font-bold"><?= number_format($product['Price'] * (1 - $product['DiscountPercent'] / 100), 0, '', ',') ?> VNĐ</span>
+                                        <span class="line-through text-gray-500 text-sm ml-2"><?= number_format($product['Price'], 0, '', ',') ?> VNĐ</span>
+                                    </div>
                                 <?php else: ?>
-                                    <span class="fs-5"><?= number_format($product['Price'], 0,'', ',') ?></span>
+                                    <div class="text-gray-900 font-bold"><?= number_format($product['Price'], 0,'', ',') ?> VNĐ</div>
                                 <?php endif ?>
                             </div>
-                            <a href="product.php?id=<?= $product['ID'] ?>" class="btn btn-primary mt-2 w-100">
-                                Xem chi tiết
-                            </a>
+                            <a href="add_to_cart.php?id=<?= $product['ID'] ?>" class="block text-center bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 rounded">Thêm vào giỏ</a>
                         </div>
                     </div>
+                <?php endforeach ?>
+            </div>
+        </section>
+
+        <!-- Promotions Banner -->
+        <section class="mb-5">
+            <div class="relative bg-primary-500 text-white rounded-lg p-5 overflow-hidden">
+                <div class="relative z-10">
+                    <h2 class="text-2xl md:text-4xl font-bold mb-2"><?= htmlspecialchars($settings['promotion_title'] ?? 'Giảm giá lên đến 50%') ?></h2>
+                    <p class="mb-4"><?= htmlspecialchars($settings['promotion_description'] ?? 'Khuyến mãi đặc biệt trong tháng này') ?></p>
+                    <a href="products.php?discount=1" class="bg-white text-primary-500 font-bold py-2 px-4 rounded">Mua ngay</a>
                 </div>
-            <?php endforeach ?>
-        </div>
-    </section>
+                <div class="absolute inset-0 bg-black bg-opacity-25"></div>
+            </div>
+        </section>
+
+        <!-- New Arrivals -->
+        <section class="mb-5">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">Sản phẩm mới</h2>
+                <a href="products.php?sort=newest" class="text-primary-500 hover:text-primary-600 font-semibold">Xem tất cả <i class="fas fa-arrow-right ml-2"></i></a>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <?php foreach ($newest_products as $product): ?>
+                    <div class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+                        <?php if($product['DiscountPercent'] > 0): ?>
+                            <span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">-<?= $product['DiscountPercent'] ?>%</span>
+                        <?php else: ?>
+                            <span class="absolute top-2 right-2 bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded">Mới</span>
+                        <?php endif ?>
+                        <img src="<?= $product['ImageURL'] ? './uploads/products/' . basename($product['ImageURL']) : '/assets/no-image.jpg' ?>" class="w-full h-48 object-cover" alt="<?= htmlspecialchars($product['Title']) ?>">
+                        <div class="p-4">
+                            <div class="text-sm text-gray-500 mb-1"><?= htmlspecialchars($product['CategoryName']) ?></div>
+                            <h5 class="font-semibold text-lg mb-1"><?= htmlspecialchars($product['Title']) ?></h5>
+                            <div class="flex justify-between items-center mb-2">
+                                <?php if($product['DiscountPercent'] > 0): ?>
+                                    <div>
+                                        <span class="text-red-500 font-bold"><?= number_format($product['Price'] * (1 - $product['DiscountPercent'] / 100), 0, '', ',') ?> VNĐ</span>
+                                        <span class="line-through text-gray-500 text-sm ml-2"><?= number_format($product['Price'], 0, '', ',') ?> VNĐ</span>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="text-gray-900 font-bold"><?= number_format($product['Price'], 0,'', ',') ?> VNĐ</div>
+                                <?php endif ?>
+                            </div>
+                            <a href="product.php?id=<?= $product['ID'] ?>" class="block text-center bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 rounded">Xem chi tiết</a>
+                        </div>
+                    </div>
+                <?php endforeach ?>
+            </div>
+        </section>
+    </div>
 
     <!-- Footer -->
     <?php include 'includes/footer.php'; ?>
-  
 
+    <script>
+        // JavaScript for Carousel
+        const prevButton = document.querySelector('[data-carousel-prev]');
+        const nextButton = document.querySelector('[data-carousel-next]');
+        const carouselItems = document.querySelectorAll('[data-carousel-item]');
+        
+        let currentIndex = 0;
+
+        function showItem(index) {
+            carouselItems.forEach((item, i) => {
+                item.classList.add('hidden');
+                item.classList.remove('flex');
+                if (i === index) {
+                    item.classList.remove('hidden');
+                    item.classList.add('flex');
+                }
+            });
+        }
+
+        function showNextItem() {
+            currentIndex = (currentIndex + 1) % carouselItems.length;
+            showItem(currentIndex);
+        }
+
+        function showPrevItem() {
+            currentIndex = (currentIndex - 1 + carouselItems.length) % carouselItems.length;
+            showItem(currentIndex);
+        }
+
+        prevButton.addEventListener('click', showPrevItem);
+        nextButton.addEventListener('click', showNextItem);
+
+        // Initialize
+        showItem(currentIndex);
     </script>
 </body>
 </html>
