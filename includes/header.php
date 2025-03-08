@@ -20,11 +20,7 @@ $settings = $pdo->query("SELECT KeyName, KeyValue FROM Settings")->fetchAll(PDO:
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="/webdungai">
-                <?php if (!empty($settings['logo_url'])): ?>
-                    <img src="<?= $settings['logo_url'] ?>" alt="Logo" style="height: 40px;">
-                <?php else: ?>
-                    <?= htmlspecialchars($settings['site_title'] ?? 'Ecommerce') ?>
-                <?php endif ?>
+                GNOUD
             </a>
             <li class="nav-item dropdown">
     <a class="dropdown-toggle" style="color:white" href="#" role="button" data-bs-toggle="dropdown">

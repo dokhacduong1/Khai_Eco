@@ -62,10 +62,14 @@
 }
 .card img{
     height: 259px;
-    width: 100%;
+    width: 259px;
 }
 .card .badge{
     position: absolute;
     top: 0;
     right: 0;
+}
+.navbar-brand{
+    font-size: 1.5rem;
+    font-weight: 700;
 }
