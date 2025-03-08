@@ -23,6 +23,8 @@ $category_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : '';
 $minPrice = isset($_GET['min_price']) ? (float)$_GET['min_price'] : 0;
 $maxPrice = isset($_GET['max_price']) ? (float)$_GET['max_price'] : 0;
+$discountOnly = isset($_GET['discount_only']) ? (bool)$_GET['discount_only'] : false;
+$inStockOnly = isset($_GET['in_stock_only']) ? (bool)$_GET['in_stock_only'] : false;
 
 try {
     // Kiểm tra category tồn tại
@@ -57,6 +59,12 @@ try {
     $priceCondition = ($minPrice || $maxPrice) ? "AND (p.Price BETWEEN ? AND ?)" : '';
     $priceParams = ($minPrice || $maxPrice) ? [$minPrice, $maxPrice] : [];
 
+    // Lọc theo giảm giá
+    $discountCondition = $discountOnly ? "AND p.DiscountPercent > 0" : '';
+
+    // Lọc theo sản phẩm còn hàng
+    $stockCondition = $inStockOnly ? "AND p.Stock > 0" : '';
+
     // Lấy tổng số sản phẩm
     $countStmt = $pdo->prepare("
         SELECT COUNT(*) 
@@ -64,6 +72,8 @@ try {
         WHERE p.CategoryID IN ($placeholders)
         $keywordCondition
         $priceCondition
+        $discountCondition
+        $stockCondition
     ");
     $countParams = array_merge($categoryIds, $keywordParams, $priceParams);
     $countStmt->execute($countParams);
@@ -81,6 +91,8 @@ try {
         WHERE p.CategoryID IN ($placeholders)
         $keywordCondition
         $priceCondition
+        $discountCondition
+        $stockCondition
         GROUP BY p.ID, pi.ImageURL
         ORDER BY p.CreatedAt DESC
         LIMIT ? OFFSET ?
@@ -104,20 +116,30 @@ include 'includes/header.php';
     .product-card {
         position: relative;
         transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
     }
+
     .product-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
+
     .product-card img {
         height: 200px;
         object-fit: cover;
+        border-bottom: 1px solid #ddd;
     }
+
     .product-card .card-body {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        padding: 15px;
     }
+
     .product-card .badge-discount {
         position: absolute;
         top: 10px;
@@ -127,6 +149,7 @@ include 'includes/header.php';
         padding: 5px;
         border-radius: 5px;
     }
+
     .buy-now {
         background-color: #28a745;
         color: white;
@@ -135,9 +158,30 @@ include 'includes/header.php';
         padding: 10px;
         text-decoration: none;
         transition: background-color 0.2s;
+        display: block;
     }
+
     .buy-now:hover {
         background-color: #218838;
+    }
+
+    .filter-container {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-container .form-group {
+        margin-bottom: 15px;
+    }
+
+    .filter-container label {
+        font-weight: bold;
+    }
+
+    .pagination {
+        margin-top: 20px;
     }
 </style>
 
@@ -145,30 +189,44 @@ include 'includes/header.php';
     <h2 class="mb-4">Danh mục: <?= htmlspecialchars($category['Name']) ?></h2>
 
     <!-- Form lọc sản phẩm -->
-    <form method="GET" action="category.php" class="mb-4">
-        <input type="hidden" name="id" value="<?= $category_id ?>">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="keyword">Từ khóa</label>
-                    <input type="text" class="form-control" id="keyword" name="keyword" value="<?= htmlspecialchars($keyword) ?>">
+    <div class="filter-container mb-4">
+        <form method="GET" action="category.php">
+            <input type="hidden" name="id" value="<?= $category_id ?>">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="keyword">Từ khóa</label>
+                        <input type="text" class="form-control" id="keyword" name="keyword" value="<?= htmlspecialchars($keyword) ?>">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="min_price">Giá tối thiểu</label>
+                        <input type="number" class="form-control" id="min_price" name="min_price" value="<?= htmlspecialchars($minPrice) ?>">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="max_price">Giá tối đa</label>
+                        <input type="number" class="form-control" id="max_price" name="max_price" value="<?= htmlspecialchars($maxPrice) ?>">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="discount_only" name="discount_only" <?= $discountOnly ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="discount_only">Chỉ sản phẩm giảm giá</label>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="in_stock_only" name="in_stock_only" <?= $inStockOnly ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="in_stock_only">Chỉ sản phẩm còn hàng</label>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="min_price">Giá tối thiểu</label>
-                    <input type="number" class="form-control" id="min_price" name="min_price" value="<?= htmlspecialchars($minPrice) ?>">
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="max_price">Giá tối đa</label>
-                    <input type="number" class="form-control" id="max_price" name="max_price" value="<?= htmlspecialchars($maxPrice) ?>">
-                </div>
-            </div>
-        </div>
-        <button type="submit" class="btn btn-primary mt-3">Lọc sản phẩm</button>
-    </form>
+            <button type="submit" class="btn btn-primary mt-3">Lọc sản phẩm</button>
+        </form>
+    </div>
     
     <?php if (empty($products)): ?>
         <div class="alert alert-info">Không có sản phẩm nào trong danh mục này</div>
@@ -188,9 +246,9 @@ include 'includes/header.php';
                                 Giá: 
                                 <?php if ($product['DiscountPercent'] > 0): ?>
                                     <span style="text-decoration: line-through;"><?= htmlspecialchars($product['Price']) ?> VND</span>
-                                    <span><?= htmlspecialchars($product['Price'] * (1 - $product['DiscountPercent'] / 100)) ?> VND</span>
+                                    <span><?= number_format($product['Price'] * (1 - $product['DiscountPercent'] / 100), 0,'', ',') ?> VND</span>
                                 <?php else: ?>
-                                    <span><?= htmlspecialchars($product['Price']) ?> VND</span>
+                                    <span><?= number_format($product['Price'], 0,'', ',') ?> VND</span>
                                 <?php endif; ?>
                             </p>
                             <a href="buy.php?id=<?= $product['ID'] ?>" class="buy-now">Mua ngay</a>
@@ -205,7 +263,7 @@ include 'includes/header.php';
             <ul class="pagination justify-content-center">
                 <?php for ($i = 1; $i <= ceil($totalProducts / $perPage); $i++): ?>
                     <li class="page-item <?= $i == $page ? 'active' : '' ?>">
-                        <a class="page-link" href="category.php?id=<?= $category_id ?>&page=<?= $i ?>&keyword=<?= htmlspecialchars($keyword) ?>&min_price=<?= htmlspecialchars($minPrice) ?>&max_price=<?= htmlspecialchars($maxPrice) ?>">
+                        <a class="page-link" href="category.php?id=<?= $category_id ?>&page=<?= $i ?>&keyword=<?= htmlspecialchars($keyword) ?>&min_price=<?= htmlspecialchars($minPrice) ?>&max_price=<?= htmlspecialchars($maxPrice) ?>&discount_only=<?= $discountOnly ? '1' : '0' ?>&in_stock_only=<?= $inStockOnly ? '1' : '0' ?>">
                             <?= $i ?>
                         </a>
                     </li>
