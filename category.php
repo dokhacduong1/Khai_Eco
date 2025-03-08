@@ -23,7 +23,6 @@ $category_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : '';
 $minPrice = isset($_GET['min_price']) ? (float)$_GET['min_price'] : 0;
 $maxPrice = isset($_GET['max_price']) ? (float)$_GET['max_price'] : 0;
-$minRating = isset($_GET['min_rating']) ? (int)$_GET['min_rating'] : 0;
 
 try {
     // Kiểm tra category tồn tại
@@ -58,10 +57,6 @@ try {
     $priceCondition = ($minPrice || $maxPrice) ? "AND (p.Price BETWEEN ? AND ?)" : '';
     $priceParams = ($minPrice || $maxPrice) ? [$minPrice, $maxPrice] : [];
 
-    // Lọc theo đánh giá
-    $ratingCondition = $minRating ? "AND (SELECT AVG(r.Rating) FROM Reviews r WHERE r.ProductID = p.ID) >= ?" : '';
-    $ratingParams = $minRating ? [$minRating] : [];
-
     // Lấy tổng số sản phẩm
     $countStmt = $pdo->prepare("
         SELECT COUNT(*) 
@@ -69,37 +64,33 @@ try {
         WHERE p.CategoryID IN ($placeholders)
         $keywordCondition
         $priceCondition
-        $ratingCondition
     ");
-    $countParams = array_merge($categoryIds, $keywordParams, $priceParams, $ratingParams);
+    $countParams = array_merge($categoryIds, $keywordParams, $priceParams);
     $countStmt->execute($countParams);
     $totalProducts = $countStmt->fetchColumn();
 
     // Lấy sản phẩm
     $productsStmt = $pdo->prepare("
-        SELECT p.*, pi.ImageURL, IFNULL(AVG(r.Rating), 0) as AvgRating
+        SELECT p.*, pi.ImageURL
         FROM Products p
         LEFT JOIN (
             SELECT ProductID, MIN(ImageURL) as ImageURL 
             FROM ProductImages 
             GROUP BY ProductID
         ) pi ON p.ID = pi.ProductID
-        LEFT JOIN Reviews r ON p.ID = r.ProductID
         WHERE p.CategoryID IN ($placeholders)
         $keywordCondition
         $priceCondition
-        $ratingCondition
         GROUP BY p.ID, pi.ImageURL
         ORDER BY p.CreatedAt DESC
         LIMIT ? OFFSET ?
     ");
 
     // Gộp tham số đúng cách
-    $params = array_merge($categoryIds, $keywordParams, $priceParams, $ratingParams, [$perPage, $offset]);
+    $params = array_merge($categoryIds, $keywordParams, $priceParams, [$perPage, $offset]);
     
     $productsStmt->execute($params);
     $products = $productsStmt->fetchAll();
-
 
 } catch (PDOException $e) {
     die("Lỗi hệ thống: " . $e->getMessage());
@@ -108,7 +99,48 @@ try {
 include 'includes/header.php';
 ?>
 
-<!-- Phần HTML giữ nguyên như trước -->
+<!-- Phần CSS tùy chỉnh -->
+<style>
+    .product-card {
+        position: relative;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .product-card img {
+        height: 200px;
+        object-fit: cover;
+    }
+    .product-card .card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .product-card .badge-discount {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: red;
+        color: white;
+        padding: 5px;
+        border-radius: 5px;
+    }
+    .buy-now {
+        background-color: #28a745;
+        color: white;
+        text-align: center;
+        border-radius: 5px;
+        padding: 10px;
+        text-decoration: none;
+        transition: background-color 0.2s;
+    }
+    .buy-now:hover {
+        background-color: #218838;
+    }
+</style>
+
 <div class="container my-5">
     <h2 class="mb-4">Danh mục: <?= htmlspecialchars($category['Name']) ?></h2>
 
@@ -116,28 +148,22 @@ include 'includes/header.php';
     <form method="GET" action="category.php" class="mb-4">
         <input type="hidden" name="id" value="<?= $category_id ?>">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="form-group">
                     <label for="keyword">Từ khóa</label>
                     <input type="text" class="form-control" id="keyword" name="keyword" value="<?= htmlspecialchars($keyword) ?>">
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="form-group">
                     <label for="min_price">Giá tối thiểu</label>
                     <input type="number" class="form-control" id="min_price" name="min_price" value="<?= htmlspecialchars($minPrice) ?>">
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="form-group">
                     <label for="max_price">Giá tối đa</label>
                     <input type="number" class="form-control" id="max_price" name="max_price" value="<?= htmlspecialchars($maxPrice) ?>">
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="min_rating">Đánh giá tối thiểu</label>
-                    <input type="number" class="form-control" id="min_rating" name="min_rating" value="<?= htmlspecialchars($minRating) ?>" min="1" max="5">
                 </div>
             </div>
         </div>
@@ -150,13 +176,24 @@ include 'includes/header.php';
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             <?php foreach ($products as $product): ?>
                 <div class="col">
-                    <div class="card">
+                    <div class="card product-card">
+                        <?php if ($product['DiscountPercent'] > 0): ?>
+                            <span class="badge-discount">-<?= htmlspecialchars($product['DiscountPercent']) ?>%</span>
+                        <?php endif; ?>
                         <img src="<?= htmlspecialchars($product['ImageURL']) ?>" class="card-img-top" alt="<?= htmlspecialchars($product['Title']) ?>">
                         <div class="card-body">
                             <h5 class="card-title"><?= htmlspecialchars($product['Title']) ?></h5>
                             <p class="card-text"><?= htmlspecialchars($product['Description']) ?></p>
-                            <p class="card-text">Giá: <?= htmlspecialchars($product['Price']) ?> VND</p>
-                            <p class="card-text">Đánh giá: <?= htmlspecialchars(number_format($product['AvgRating'], 1)) ?>/5</p>
+                            <p class="card-text">
+                                Giá: 
+                                <?php if ($product['DiscountPercent'] > 0): ?>
+                                    <span style="text-decoration: line-through;"><?= htmlspecialchars($product['Price']) ?> VND</span>
+                                    <span><?= htmlspecialchars($product['Price'] * (1 - $product['DiscountPercent'] / 100)) ?> VND</span>
+                                <?php else: ?>
+                                    <span><?= htmlspecialchars($product['Price']) ?> VND</span>
+                                <?php endif; ?>
+                            </p>
+                            <a href="buy.php?id=<?= $product['ID'] ?>" class="buy-now">Mua ngay</a>
                         </div>
                     </div>
                 </div>
@@ -168,7 +205,7 @@ include 'includes/header.php';
             <ul class="pagination justify-content-center">
                 <?php for ($i = 1; $i <= ceil($totalProducts / $perPage); $i++): ?>
                     <li class="page-item <?= $i == $page ? 'active' : '' ?>">
-                        <a class="page-link" href="category.php?id=<?= $category_id ?>&page=<?= $i ?>&keyword=<?= htmlspecialchars($keyword) ?>&min_price=<?= htmlspecialchars($minPrice) ?>&max_price=<?= htmlspecialchars($maxPrice) ?>&min_rating=<?= htmlspecialchars($minRating) ?>">
+                        <a class="page-link" href="category.php?id=<?= $category_id ?>&page=<?= $i ?>&keyword=<?= htmlspecialchars($keyword) ?>&min_price=<?= htmlspecialchars($minPrice) ?>&max_price=<?= htmlspecialchars($maxPrice) ?>">
                             <?= $i ?>
                         </a>
                     </li>
