@@ -24,6 +24,7 @@ if (isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="/webdungai/assets/css/style.css">
     <style>
         /* Shadcn UI Style Variables */
+        /* Shadcn UI Style Variables */
         :root {
             --background: 0 0% 100%;
             --foreground: 222.2 47.4% 11.2%;
@@ -116,6 +117,7 @@ if (isset($_SESSION['user_id'])) {
             color: hsl(var(--accent-foreground));
         }
         
+        /* Fix cho dropdown menu */
         .shadcn-dropdown {
             position: absolute;
             top: 100%;
@@ -136,8 +138,32 @@ if (isset($_SESSION['user_id'])) {
             z-index: 20;
         }
         
+        /* Thêm khoảng đệm ảo để giúp di chuột từ menu đến dropdown */
+        .shadcn-nav-item::after {
+            content: '';
+            position: absolute;
+            height: 20px;
+            left: 0;
+            right: 0;
+            bottom: -10px;
+            background: transparent;
+            z-index: 10;
+        }
+        
         .shadcn-dropdown-submenu {
             position: relative;
+        }
+        
+        /* Thêm khoảng đệm ảo cho submenu */
+        .shadcn-dropdown-submenu::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            top: 0;
+            bottom: 0;
+            right: -20px;
+            background: transparent;
+            z-index: 10;
         }
         
         .shadcn-dropdown-submenu .shadcn-dropdown {
@@ -147,6 +173,7 @@ if (isset($_SESSION['user_id'])) {
             margin-top: 0;
         }
         
+        /* Hiển thị dropdown khi hover */
         .shadcn-nav-item:hover > .shadcn-dropdown,
         .shadcn-dropdown-submenu:hover > .shadcn-dropdown {
             opacity: 1;
@@ -391,6 +418,12 @@ if (isset($_SESSION['user_id'])) {
             
             .shadcn-dropdown-link {
                 width: 100%;
+            }
+            
+            /* Gỡ bỏ khoảng đệm ảo trên mobile */
+            .shadcn-nav-item::after,
+            .shadcn-dropdown-submenu::after {
+                display: none;
             }
         }
     </style>

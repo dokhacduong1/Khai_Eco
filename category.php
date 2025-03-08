@@ -129,6 +129,7 @@ include 'includes/header.php';
 
     .product-card img {
         height: 200px;
+        width: 100%;
         object-fit: cover;
         border-bottom: 1px solid #ddd;
     }
@@ -241,14 +242,14 @@ include 'includes/header.php';
                         <img src="<?= htmlspecialchars($product['ImageURL']) ?>" class="card-img-top" alt="<?= htmlspecialchars($product['Title']) ?>">
                         <div class="card-body">
                             <h5 class="card-title"><?= htmlspecialchars($product['Title']) ?></h5>
-                            <p class="card-text"><?= htmlspecialchars($product['Description']) ?></p>
+                            <p class="card-text truncate-text"><?= htmlspecialchars($product['Description']) ?></p>
                             <p class="card-text">
-                                Giá: 
+                                <span>Giá:</span> 
                                 <?php if ($product['DiscountPercent'] > 0): ?>
-                                    <span style="text-decoration: line-through;"><?= htmlspecialchars($product['Price']) ?> VND</span>
-                                    <span><?= number_format($product['Price'] * (1 - $product['DiscountPercent'] / 100), 0,'', ',') ?> VND</span>
+                                    <span style="text-decoration: line-through;"><?= number_format($product['Price'], 0,'', ',') ?> VNĐ</span>
+                                    <span><?= number_format($product['Price'] * (1 - $product['DiscountPercent'] / 100), 0,'', ',') ?> VNĐ</span>
                                 <?php else: ?>
-                                    <span><?= number_format($product['Price'], 0,'', ',') ?> VND</span>
+                                    <span><?= number_format($product['Price'], 0,'', ',') ?> VNĐ</span>
                                 <?php endif; ?>
                             </p>
                             <form action="add_to_cart.php" method="POST" class="d-flex gap-3">

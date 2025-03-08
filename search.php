@@ -106,7 +106,7 @@ include 'includes/header.php';
                         <img src="<?= htmlspecialchars($product['ImageURL']) ?>" class="card-img-top" alt="<?= htmlspecialchars($product['Title']) ?>">
                         <div class="card-body">
                             <h5 class="card-title"><?= htmlspecialchars($product['Title']) ?></h5>
-                            <p class="card-text"><?= htmlspecialchars($product['Description']) ?></p>
+                            <p class="card-text truncate-text"><?= htmlspecialchars($product['Description']) ?></p>
                             <p class="card-text">
                                 Giá: 
                                 <?php if ($product['DiscountPercent'] > 0): ?>

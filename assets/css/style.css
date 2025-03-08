@@ -202,3 +202,9 @@
 .related-product-card:hover {
     transform: translateY(-5px);
 }
+.truncate-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px; /* Điều chỉnh theo nhu cầu */
+  }
