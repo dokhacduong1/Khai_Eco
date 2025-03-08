@@ -105,7 +105,7 @@ include 'includes/header.php';
                         <?php endif; ?>
                         <img src="<?= htmlspecialchars($product['ImageURL']) ?>" class="card-img-top" alt="<?= htmlspecialchars($product['Title']) ?>">
                         <div class="card-body">
-                            <h5 class="card-title"><?= htmlspecialchars($product['Title']) ?></h5>
+                            <a href="./product.php?id=<?= $product['ID'] ?>"  class="card-title2" ><?= htmlspecialchars($product['Title']) ?></a>
                             <p class="card-text truncate-text"><?= htmlspecialchars($product['Description']) ?></p>
                             <p class="card-text">
                                 Giá: 
@@ -116,7 +116,17 @@ include 'includes/header.php';
                                     <span><?= htmlspecialchars($product['Price']) ?> VND</span>
                                 <?php endif; ?>
                             </p>
-                            <a href="buy.php?id=<?= $product['ID'] ?>" class="buy-now">Mua ngay</a>
+                            <form action="add_to_cart.php" method="POST" class="d-flex gap-3">
+                                <input type="hidden" name="product_id" value="<?= $product['ID'] ?>">
+                                <input type="hidden" name="quantity" value="1" id="quantityInput">
+                                
+                                <button class="btn btn-primary btn-lg px-5" 
+                                    <?= $product['Stock'] < 1 ? 'disabled' : '' ?> 
+                                    type="submit">
+                                   Thêm vào giỏ hàng
+                                </button>
+                    
+                            </form>
                         </div>
                     </div>
                 </div>

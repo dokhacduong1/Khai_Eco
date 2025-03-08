@@ -208,3 +208,7 @@
     text-overflow: ellipsis;
     max-width: 150px; /* Điều chỉnh theo nhu cầu */
   }
+  .card-title2{
+    color: #000 !important;
+    text-decoration: none;
+  }
