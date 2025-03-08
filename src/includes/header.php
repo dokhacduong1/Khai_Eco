@@ -203,7 +203,7 @@ if (isset($_SESSION['user_id'])) {
         .shadcn-search {
             flex: 1;
             max-width: 600px;
-            margin: 0 2rem;
+          
         }
         
         .shadcn-search-form {
@@ -368,7 +368,7 @@ if (isset($_SESSION['user_id'])) {
                 order: 4;
                 max-width: 100%;
                 width: 100%;
-                margin: 1rem 0;
+              
             }
             
             .shadcn-nav {

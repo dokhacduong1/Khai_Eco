@@ -52,120 +52,120 @@ try {
 include 'includes/header.php';
 ?>
 
-<div class="container my-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Chi tiết đơn hàng #<?= $order['ID'] ?></h2>
-        <a href="orders.php" class="btn btn-secondary">Quay lại</a>
+<div class="container mx-auto my-8 px-4">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">Chi tiết đơn hàng #<?= $order['ID'] ?></h2>
+        <a href="orders.php" class="bg-gray-500 text-white px-4 py-2 rounded">Quay lại</a>
     </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Thông tin khách hàng</h5>
-                    <dl class="row">
-                        <dt class="col-sm-4">Họ tên:</dt>
-                        <dd class="col-sm-8"><?= htmlspecialchars($order['FullName']) ?></dd>
-
-                        <dt class="col-sm-4">Email:</dt>
-                        <dd class="col-sm-8"><?= $order['Email'] ?></dd>
-
-                        <dt class="col-sm-4">Điện thoại:</dt>
-                        <dd class="col-sm-8"><?= $order['Phone'] ?? 'N/A' ?></dd>
-
-                        <dt class="col-sm-4">Địa chỉ:</dt>
-                        <dd class="col-sm-8"><?= nl2br(htmlspecialchars($order['Address'])) ?></dd>
-                    </dl>
-                </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div>
+            <div class="bg-white p-6 rounded shadow mb-6">
+                <h5 class="text-lg font-semibold mb-4">Thông tin khách hàng</h5>
+                <dl class="divide-y divide-gray-200">
+                    <div class="py-2 flex justify-between">
+                        <dt class="text-gray-600">Họ tên:</dt>
+                        <dd class="text-gray-900"><?= htmlspecialchars($order['FullName']) ?></dd>
+                    </div>
+                    <div class="py-2 flex justify-between">
+                        <dt class="text-gray-600">Email:</dt>
+                        <dd class="text-gray-900"><?= $order['Email'] ?></dd>
+                    </div>
+                    <div class="py-2 flex justify-between">
+                        <dt class="text-gray-600">Điện thoại:</dt>
+                        <dd class="text-gray-900"><?= $order['Phone'] ?? 'N/A' ?></dd>
+                    </div>
+                    <div class="py-2 flex justify-between">
+                        <dt class="text-gray-600">Địa chỉ:</dt>
+                        <dd class="text-gray-900"><?= nl2br(htmlspecialchars($order['Address'])) ?></dd>
+                    </div>
+                </dl>
             </div>
-        </div>
 
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Thông tin thanh toán</h5>
-                    <dl class="row">
-                        <dt class="col-sm-5">Phương thức:</dt>
-                        <dd class="col-sm-7"><?= ucfirst($order['PaymentMethod']) ?></dd>
-
-                        <dt class="col-sm-5">Trạng thái:</dt>
-                        <dd class="col-sm-7">
-                            <span class="badge bg-<?= 
-                                $order['Status'] == 'completed' ? 'success' : 
-                                ($order['Status'] == 'failed' ? 'danger' : 'secondary') ?>">
+            <div class="bg-white p-6 rounded shadow">
+                <h5 class="text-lg font-semibold mb-4">Thông tin thanh toán</h5>
+                <dl class="divide-y divide-gray-200">
+                    <div class="py-2 flex justify-between">
+                        <dt class="text-gray-600">Phương thức:</dt>
+                        <dd class="text-gray-900"><?= ucfirst($order['PaymentMethod']) ?></dd>
+                    </div>
+                    <div class="py-2 flex justify-between">
+                        <dt class="text-gray-600">Trạng thái:</dt>
+                        <dd class="text-gray-900">
+                            <span class="px-2 py-1 rounded text-white bg-<?= 
+                                $order['Status'] == 'completed' ? 'green-500' : 
+                                ($order['Status'] == 'failed' ? 'red-500' : 'yellow-500') ?>">
                                 <?= ucfirst($order['Status']) ?>
                             </span>
                         </dd>
+                    </div>
+                    <div class="py-2 flex justify-between">
+                        <dt class="text-gray-600">Mã giao dịch:</dt>
+                        <dd class="text-gray-900"><?= $order['TransactionID'] ?? 'N/A' ?></dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
 
-                        <dt class="col-sm-5">Mã giao dịch:</dt>
-                        <dd class="col-sm-7"><?= $order['TransactionID'] ?? 'N/A' ?></dd>
-                    </dl>
+        <div>
+            <div class="bg-white p-6 rounded shadow mb-6">
+                <h5 class="text-lg font-semibold mb-4">Sản phẩm đã đặt</h5>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                <th class="py-2 px-4 text-left">Sản phẩm</th>
+                                <th class="py-2 px-4 text-right">Đơn giá</th>
+                                <th class="py-2 px-4 text-center">Số lượng</th>
+                                <th class="py-2 px-4 text-right">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($items as $item): 
+                                $price = $item['Price'] * (1 - $item['DiscountPercent']/100);
+                                $subtotal = $price * $item['Quantity'];
+                            ?>
+                            <tr>
+                                <td class="py-2 px-4"><?= htmlspecialchars($item['Title']) ?></td>
+                                <td class="py-2 px-4 text-right"><?= number_format($price, 0, '', ',') ?> VNĐ</td>
+                                <td class="py-2 px-4 text-center"><?= $item['Quantity'] ?></td>
+                                <td class="py-2 px-4 text-right"><?= number_format($subtotal, 0, '', ',') ?> VNĐ</td>
+                            </tr>
+                            <?php endforeach ?>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="3" class="py-2 px-4 text-right">Tổng cộng:</th>
+                                <th class="py-2 px-4 text-right"><?= number_format($total, 0, '', ',') ?> VNĐ</th>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">Sản phẩm đã đặt</h5>
-            
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Sản phẩm</th>
-                            <th>Đơn giá</th>
-                            <th>Số lượng</th>
-                            <th>Thành tiền</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($items as $item): 
-                            $price = $item['Price'] * (1 - $item['DiscountPercent']/100);
-                            $subtotal = $price * $item['Quantity'];
-                        ?>
-                        <tr>
-                            <td><?= htmlspecialchars($item['Title']) ?></td>
-                            <td><?= number_format($price, 0,'',',') ?> VNĐ</td>
-                            <td><?= $item['Quantity'] ?></td>
-                            <td><?= number_format($subtotal, 0,'',',') ?> VNĐ</td>
-                        </tr>
-                        <?php endforeach ?>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="3" class="text-end">Tổng cộng:</th>
-                            <th><?= number_format($total, 0,'',',') ?> VNĐ</th>
-                        </tr>
-                    </tfoot>
-                </table>
+            <div class="bg-white p-6 rounded shadow">
+                <h5 class="text-lg font-semibold mb-4">Lịch sử trạng thái</h5>
+                <ul class="divide-y divide-gray-200">
+                    <?php
+                    $trackingStmt = $pdo->prepare("
+                        SELECT * FROM OrderTracking 
+                        WHERE OrderID = ? 
+                        ORDER BY UpdatedAt DESC
+                    ");
+                    $trackingStmt->execute([$order_id]);
+                    $tracking = $trackingStmt->fetchAll();
+                    ?>
+                    
+                    <?php foreach ($tracking as $log): ?>
+                    <li class="py-2 flex justify-between">
+                        <span><?= ucfirst($log['Status']) ?></span>
+                        <small class="text-gray-500">
+                            <?= date('d/m/Y H:i', strtotime($log['UpdatedAt'])) ?>
+                        </small>
+                    </li>
+                    <?php endforeach ?>
+                </ul>
             </div>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Lịch sử trạng thái</h5>
-            <ul class="list-group">
-                <?php
-                $trackingStmt = $pdo->prepare("
-                    SELECT * FROM OrderTracking 
-                    WHERE OrderID = ? 
-                    ORDER BY UpdatedAt DESC
-                ");
-                $trackingStmt->execute([$order_id]);
-                $tracking = $trackingStmt->fetchAll();
-                ?>
-                
-                <?php foreach ($tracking as $log): ?>
-                <li class="list-group-item d-flex justify-content-between">
-                    <span><?= ucfirst($log['Status']) ?></span>
-                    <small class="text-muted">
-                        <?= date('d/m/Y H:i', strtotime($log['UpdatedAt'])) ?>
-                    </small>
-                </li>
-                <?php endforeach ?>
-            </ul>
         </div>
     </div>
 </div>

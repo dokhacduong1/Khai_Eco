@@ -113,11 +113,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include 'includes/header.php';
 ?>
 
-<div class="container my-5">
-    <h2 class="mb-4">Thanh toán</h2>
+<div class="container mx-auto my-8 px-4">
+    <h2 class="text-2xl font-bold mb-6">Thanh toán</h2>
     
     <?php if ($errors): ?>
-        <div class="alert alert-danger">
+        <div class="bg-red-100 text-red-700 p-4 rounded mb-6">
             <?php foreach ($errors as $error): ?>
                 <div><?= $error ?></div>
             <?php endforeach ?>
@@ -125,89 +125,85 @@ include 'includes/header.php';
     <?php endif ?>
 
     <?php if ($success): ?>
-        <div class="alert alert-success"><?= $success ?></div>
+        <div class="bg-green-100 text-green-700 p-4 rounded mb-6"><?= $success ?></div>
     <?php endif ?>
 
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Thông tin giao hàng</h5>
-                    <form method="POST">
-                        <div class="mb-3">
-                            <label>Họ và tên</label>
-                            <input type="text" name="name" class="form-control" required
-                                value="<?= htmlspecialchars($user['FullName'] ?? '') ?>">
-                        </div>
+    <div class="flex flex-col lg:flex-row gap-8">
+        <div class="lg:w-2/3">
+            <div class="bg-white p-6 rounded shadow mb-4">
+                <h5 class="text-lg font-semibold mb-4">Thông tin giao hàng</h5>
+                <form method="POST">
+                    <div class="mb-4">
+                        <label class="block text-gray-700">Họ và tên</label>
+                        <input type="text" name="name" class="w-full px-3 py-2 border border-gray-300 rounded mt-1" required
+                            value="<?= htmlspecialchars($user['FullName'] ?? '') ?>">
+                    </div>
 
-                        <div class="mb-3">
-                            <label>Số điện thoại</label>
-                            <input type="tel" name="phone" class="form-control" required
-                                value="<?= htmlspecialchars($user['Phone'] ?? '') ?>">
-                        </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700">Số điện thoại</label>
+                        <input type="tel" name="phone" class="w-full px-3 py-2 border border-gray-300 rounded mt-1" required
+                            value="<?= htmlspecialchars($user['Phone'] ?? '') ?>">
+                    </div>
 
-                        <div class="mb-3">
-                            <label>Địa chỉ</label>
-                            <textarea name="address" class="form-control" rows="3" required><?= 
-                                htmlspecialchars($user['Address'] ?? '') ?></textarea>
-                        </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700">Địa chỉ</label>
+                        <textarea name="address" class="w-full px-3 py-2 border border-gray-300 rounded mt-1" rows="3" required><?= 
+                            htmlspecialchars($user['Address'] ?? '') ?></textarea>
+                    </div>
 
-                        <div class="mb-3">
-                            <label>Phương thức thanh toán</label>
-                            <select name="payment_method" class="form-select" required>
-                                <option value="cod">Thanh toán khi nhận hàng</option>
-                                <option value="bank_transfer">Chuyển khoản ngân hàng</option>
-                                <option value="credit_card">Thẻ tín dụng</option>
-                            </select>
-                        </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700">Phương thức thanh toán</label>
+                        <select name="payment_method" class="w-full px-3 py-2 border border-gray-300 rounded mt-1" required>
+                            <option value="cod">Thanh toán khi nhận hàng</option>
+                            <option value="bank_transfer">Chuyển khoản ngân hàng</option>
+                            <option value="credit_card">Thẻ tín dụng</option>
+                        </select>
+                    </div>
 
-                        <button type="submit" class="btn btn-primary w-100 btn-lg">
-                            Đặt hàng
-                        </button>
-                    </form>
-                </div>
+                    <button type="submit" class="w-full bg-black cursor-pointer text-white font-semibold py-3 rounded">Đặt hàng</button>
+                </form>
             </div>
         </div>
 
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Đơn hàng của bạn</h5>
-                    
-                    <?php if (empty($cartItems)): ?>
-                        <div class="alert alert-info">Không có sản phẩm nào</div>
-                    <?php else: ?>
-                        <ul class="list-group mb-3">
-                            <?php foreach ($cartItems as $item): 
-                                $price = $item['Price'] * (1 - $item['DiscountPercent']/100);
-                                $subtotal = $price * $item['Quantity'];
-                            ?>
-                            <li class="list-group-item d-flex justify-content-between">
-                                <div>
-                                    <h6><?= htmlspecialchars($item['Title']) ?></h6>
-                                    <small class="text-muted">
-                                        <?= $item['Quantity'] ?> x $<?= number_format($price, 2) ?>
-                                    </small>
-                                </div>
-                                <span>$<?= number_format($subtotal, 2) ?></span>
-                            </li>
-                            <?php endforeach ?>
-                        </ul>
+        <div class="lg:w-1/3">
+            <div class="bg-white p-6 rounded shadow">
+                <h5 class="text-lg font-semibold mb-4">Đơn hàng của bạn</h5>
+                
+                <?php if (empty($cartItems)): ?>
+                    <div class="bg-gray-100 text-gray-700 p-4 rounded">Không có sản phẩm nào</div>
+                <?php else: ?>
+                    <ul class="divide-y divide-gray-200 mb-4">
+                        <?php foreach ($cartItems as $item): 
+                            $price = $item['Price'] * (1 - $item['DiscountPercent']/100);
+                            $subtotal = $price * $item['Quantity'];
+                        ?>
+                        <li class="py-4 flex justify-between">
+                            <div>
+                                <h6 class="text-gray-900"><?= htmlspecialchars($item['Title']) ?></h6>
+                                <small class="text-gray-500"><?= $item['Quantity'] ?> x <?= number_format($price, 0, '', ',') ?> VNĐ</small>
+                            </div>
+                            <span class="text-gray-900"><?= number_format($subtotal, 0, '', ',') ?> VNĐ</span>
+                        </li>
+                        <?php endforeach ?>
+                    </ul>
 
-                        <dl class="row">
-                            <dt class="col-6">Tạm tính:</dt>
-                            <dd class="col-6 text-end">$<?= number_format($total, 2) ?></dd>
-                            
-                            <dt class="col-6">Phí vận chuyển:</dt>
-                            <dd class="col-6 text-end">$0.00</dd>
-                            
-                            <dt class="col-6 border-top mt-2 pt-2">Tổng tiền:</dt>
-                            <dd class="col-6 border-top mt-2 pt-2 text-end h4 text-danger">
-                                $<?= number_format($total, 2) ?>
-                            </dd>
-                        </dl>
-                    <?php endif ?>
-                </div>
+                    <dl class="space-y-2">
+                        <div class="flex justify-between">
+                            <dt class="text-gray-700">Tạm tính:</dt>
+                            <dd class="text-gray-900"><?= number_format($total, 0, '', ',') ?> VNĐ</dd>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <dt class="text-gray-700">Phí vận chuyển:</dt>
+                            <dd class="text-gray-900">0 VNĐ</dd>
+                        </div>
+                        
+                        <div class="flex justify-between border-t border-gray-200 pt-2">
+                            <dt class="text-lg font-bold text-red-500">Tổng tiền:</dt>
+                            <dd class="text-lg font-bold text-red-500"><?= number_format($total, 0, '', ',') ?> VNĐ</dd>
+                        </div>
+                    </dl>
+                <?php endif ?>
             </div>
         </div>
     </div>

@@ -65,26 +65,17 @@ if (isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký</title>
-    <style>
-        .auth-container {
-            max-width: 400px;
-            margin: 5rem auto;
-            padding: 2rem;
-            border: 1px solid #dee2e6;
-            border-radius: 10px;
-            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-gray-100">
     <?php include 'includes/header.php'; ?>
 
-    <div class="container">
-        <div class="auth-container">
-            <h2 class="mb-4 text-center">Đăng ký tài khoản</h2>
+    <div class="container mx-auto mt-12 p-4">
+        <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-6 text-center">Đăng ký tài khoản</h2>
             
             <?php if ($errors): ?>
-                <div class="alert alert-danger">
+                <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
                     <?php foreach ($errors as $error): ?>
                         <div><?= $error ?></div>
                     <?php endforeach ?>
@@ -92,42 +83,42 @@ if (isset($_SESSION['user_id'])) {
             <?php endif ?>
 
             <?php if ($success): ?>
-                <div class="alert alert-success"><?= $success ?></div>
+                <div class="bg-green-100 text-green-700 p-4 rounded mb-4"><?= $success ?></div>
             <?php endif ?>
 
             <form method="POST">
-                <div class="mb-3">
-                    <label>Họ và tên</label>
-                    <input type="text" name="name" class="form-control" required
+                <div class="mb-4">
+                    <label class="block text-gray-700">Họ và tên</label>
+                    <input type="text" name="name" class="w-full px-3 py-2 border border-gray-300 rounded mt-1" required
                         value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
                 </div>
 
-                <div class="mb-3">
-                    <label>Email</label>
-                    <input type="email" name="email" class="form-control" required
+                <div class="mb-4">
+                    <label class="block text-gray-700">Email</label>
+                    <input type="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded mt-1" required
                         value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
                 </div>
 
-                <div class="mb-3">
-                    <label>Số điện thoại</label>
-                    <input type="tel" name="phone" class="form-control" 
+                <div class="mb-4">
+                    <label class="block text-gray-700">Số điện thoại</label>
+                    <input type="tel" name="phone" class="w-full px-3 py-2 border border-gray-300 rounded mt-1"
                         value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>">
                 </div>
 
-                <div class="mb-3">
-                    <label>Mật khẩu</label>
-                    <input type="password" name="password" class="form-control" required>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Mật khẩu</label>
+                    <input type="password" name="password" class="w-full px-3 py-2 border border-gray-300 rounded mt-1" required>
                 </div>
 
-                <div class="mb-3">
-                    <label>Nhập lại mật khẩu</label>
-                    <input type="password" name="confirm_password" class="form-control" required>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Nhập lại mật khẩu</label>
+                    <input type="password" name="confirm_password" class="w-full px-3 py-2 border border-gray-300 rounded mt-1" required>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">Đăng ký</button>
+                <button type="submit" class="w-full bg-black text-white py-2 rounded">Đăng ký</button>
                 
-                <div class="mt-3 text-center">
-                    <a href="login.php">Đã có tài khoản? Đăng nhập ngay</a>
+                <div class="mt-4 text-center">
+                    <a href="login.php" class="text-black hover:underline">Đăng nhập ngay</a>
                 </div>
             </form>
         </div>

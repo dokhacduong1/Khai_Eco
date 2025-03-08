@@ -35,148 +35,23 @@ try {
 
 <!-- Custom CSS for Shadcn UI style -->
 <style>
-    /* Shadcn UI inspired styles */
-    :root {
-        --primary: #0f172a;
-        --primary-hover: #1e293b;
-        --background: #ffffff;
-        --foreground: #0f172a;
-        --muted: #f1f5f9;
-        --muted-foreground: #64748b;
-        --border: #e2e8f0;
-        --ring: #94a3b8;
-        --radius: 0.5rem;
-    }
-
-    .shadcn-card {
-        background-color: var(--background);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        overflow: hidden;
-        position: relative;
-        transition: all 0.2s ease;
-    }
-
-    .shadcn-card:hover {
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-
-    .shadcn-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: var(--radius);
-        font-weight: 500;
-        font-size: 0.875rem;
-        height: 2.5rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-        transition: all 0.2s ease;
-    }
-
-    .shadcn-btn-sm {
-        height: 2rem;
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-        font-size: 0.75rem;
-    }
-
-    .shadcn-btn-primary {
-        background-color: var(--primary);
-        color: white;
-        border: none;
-    }
-
-    .shadcn-btn-primary:hover {
-        background-color: var(--primary-hover);
-    }
-
-    .shadcn-btn-outline {
-        background-color: transparent;
-        border: 1px solid var(--border);
-        color: var(--foreground);
-    }
-
-    .shadcn-btn-outline:hover {
-        background-color: var(--muted);
-        border-color: var(--muted-foreground);
-    }
-
-    .shadcn-btn-destructive {
-        background-color: #ef4444;
-        color: white;
-        border: none;
-    }
-
-    .shadcn-btn-destructive:hover {
-        background-color: #dc2626;
-    }
-
-    .shadcn-input {
-        height: 2.5rem;
-        width: 100%;
-        border-radius: var(--radius);
-        border: 1px solid var(--border);
-        padding: 0 0.75rem;
-        font-size: 0.875rem;
-        background-color: var(--background);
-        color: var(--foreground);
-    }
-
-    .shadcn-input:focus {
-        outline: none;
-        border-color: var(--ring);
-        box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.2);
-    }
-
-    .delete-button {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        z-index: 10;
-        background-color: #ef4444;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .delete-button:hover {
-        background-color: #dc2626;
-        transform: scale(1.05);
-    }
-
-    .quantity-input-group {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .quantity-input {
-        max-width: 5rem;
-    }
+   
 </style>
 
-<div class="container my-5">
-    <h2 class="mb-4">Giỏ hàng của bạn</h2>
+<div class="container mx-auto my-8 px-4">
+    <h2 class="text-2xl font-bold mb-6">Giỏ hàng của bạn</h2>
     
     <?php if (empty($cartItems)): ?>
         <div class="alert alert-info">Giỏ hàng trống</div>
     <?php else: ?>
-        <div class="row">
-            <div class="col-lg-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <div class="lg:w-2/3">
                 <?php foreach ($cartItems as $item): 
                     $price = $item['Price'] * (1 - $item['DiscountPercent']/100);
                     $subtotal = $price * $item['Quantity'];
                     $total += $subtotal;
                 ?>
-                <div class="shadcn-card mb-3 position-relative">
+                <div class="shadcn-card mb-3 relative">
                     <!-- Delete button placed at top right corner -->
                     <a href="remove_from_cart.php?id=<?= $item['ID'] ?>" 
                        class="delete-button"
@@ -186,45 +61,42 @@ try {
                         </svg>
                     </a>
                     
-                    <div class="row g-0">
-                        <div class="col-md-3">
+                    <div class="flex flex-col md:flex-row">
+                        <div class="md:w-1/3">
                             <img src="<?= $item['ImageURL'] ? 'uploads/products/'.basename($item['ImageURL']) : 'assets/no-image.jpg' ?>" 
-                                 class="img-fluid rounded-start" 
-                                 alt="<?= htmlspecialchars($item['Title']) ?>"
-                                 style="height: 100%; object-fit: cover;">
+                                 class="w-full h-full object-cover rounded-l-md" 
+                                 alt="<?= htmlspecialchars($item['Title']) ?>">
                         </div>
-                        <div class="col-md-9">
-                            <div class="card-body p-4">
-                                <h5 class="card-title mb-3"><?= htmlspecialchars($item['Title']) ?></h5>
+                        <div class="md:w-2/3 p-4">
+                            <h5 class="text-lg font-semibold mb-3"><?= htmlspecialchars($item['Title']) ?></h5>
+                            
+                            <div class="flex flex-col md:flex-row md:items-center justify-between">
+                                <div class="mb-3 md:mb-0">
+                                    <p class="text-red-500 font-bold mb-1">
+                                        <?= number_format($price,0,'',',') ?> VNĐ
+                                    </p>
+                                    <?php if ($item['DiscountPercent'] > 0): ?>
+                                        <del class="text-gray-500 text-sm"><?= number_format($item['Price'], 0,'',',') ?> VNĐ</del>
+                                    <?php endif ?>
+                                </div>
                                 
-                                <div class="row align-items-center">
-                                    <div class="col-md-4">
-                                        <p class="h5 text-danger mb-1">
-                                            <?= number_format($price,0,'',',') ?> VNĐ
-                                        </p>
-                                        <?php if ($item['DiscountPercent'] > 0): ?>
-                                            <del class="text-muted small"><?= number_format($item['Price'], 0,'',',') ?> VNĐ</del>
-                                        <?php endif ?>
-                                    </div>
-                                    
-                                    <div class="col-md-4">
-                                        <form action="update_cart.php" method="POST" class="quantity-input-group">
-                                            <input type="hidden" name="cart_id" value="<?= $item['ID'] ?>">
-                                            <input type="number" 
-                                                   name="quantity" 
-                                                   value="<?= $item['Quantity'] ?>" 
-                                                   min="1" 
-                                                   max="<?= $item['Stock'] ?>" 
-                                                   class="shadcn-input quantity-input">
-                                            <button type="submit" class="shadcn-btn shadcn-btn-outline shadcn-btn-sm">
-                                                Cập nhật
-                                            </button>
-                                        </form>
-                                    </div>
-                                    
-                                    <div class="col-md-4 text-end">
-                                        <p class="h5"><?= number_format($subtotal, 0,'',',') ?> VNĐ</p>
-                                    </div>
+                                <div class="quantity-input-group">
+                                    <form action="update_cart.php" method="POST">
+                                        <input type="hidden" name="cart_id" value="<?= $item['ID'] ?>">
+                                        <input type="number" 
+                                               name="quantity" 
+                                               value="<?= $item['Quantity'] ?>" 
+                                               min="1" 
+                                               max="<?= $item['Stock'] ?>" 
+                                               class="shadcn-input quantity-input">
+                                        <button type="submit" class="shadcn-btn shadcn-btn-outline shadcn-btn-sm">
+                                            Cập nhật
+                                        </button>
+                                    </form>
+                                </div>
+                                
+                                <div class="text-end">
+                                    <p class="text-lg font-bold"><?= number_format($subtotal, 0,'',',') ?> VNĐ</p>
                                 </div>
                             </div>
                         </div>
@@ -233,23 +105,23 @@ try {
                 <?php endforeach ?>
             </div>
             
-            <div class="col-lg-4">
+            <div class="lg:w-1/3">
                 <div class="shadcn-card">
-                    <div class="card-body p-4">
-                        <h5 class="card-title mb-4">Tổng cộng</h5>
-                        <dl class="row">
-                            <dt class="col-6">Tạm tính:</dt>
-                            <dd class="col-6 text-end"><?= number_format($total, 0,'',',') ?> VNĐ</dd>
+                    <div class="p-4">
+                        <h5 class="text-xl font-semibold mb-4">Tổng cộng</h5>
+                        <dl class="grid grid-cols-2 gap-y-2">
+                            <dt class="text-gray-700">Tạm tính:</dt>
+                            <dd class="text-end text-gray-900"><?= number_format($total, 0,'',',') ?> VNĐ</dd>
                             
-                            <dt class="col-6">Phí vận chuyển:</dt>
-                            <dd class="col-6 text-end">0</dd>
+                            <dt class="text-gray-700">Phí vận chuyển:</dt>
+                            <dd class="text-end text-gray-900">0</dd>
                             
-                            <dt class="col-6 border-top mt-3 pt-3">Tổng tiền:</dt>
-                            <dd class="col-6 border-top mt-3 pt-3 text-end h4 text-danger">
+                            <dt class="col-span-2 border-t mt-3 pt-3 text-lg font-bold text-red-500">Tổng tiền:</dt>
+                            <dd class="col-span-2 text-end text-lg font-bold text-red-500">
                                 <?= number_format($total, 0,'',',') ?> VNĐ
                             </dd>
                         </dl>
-                        <a href="checkout.php" class="shadcn-btn shadcn-btn-primary w-100 mt-3">
+                        <a href="checkout.php" class="bg-black text-white p-3 rounded-sm w-full mt-4">
                             Thanh toán
                         </a>
                     </div>

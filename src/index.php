@@ -160,7 +160,7 @@ $newest_products = $pdo->query("
                         <img src="<?= $product['ImageURL'] ? './uploads/products/' . basename($product['ImageURL']) : '/assets/no-image.jpg' ?>" class="w-full h-48 object-cover" alt="<?= htmlspecialchars($product['Title']) ?>">
                         <div class="p-4">
                             <div class="text-sm text-gray-500 mb-1"><?= htmlspecialchars($product['CategoryName']) ?></div>
-                            <h5 class="font-semibold text-lg mb-1"><?= htmlspecialchars($product['Title']) ?></h5>
+                            <h5 class="font-semibold text-lg truncate mb-1"><?= htmlspecialchars($product['Title']) ?></h5>
                             <div class="flex justify-between items-center mb-2">
                                 <?php if($product['DiscountPercent'] > 0): ?>
                                     <div>
@@ -171,7 +171,7 @@ $newest_products = $pdo->query("
                                     <div class="text-gray-900 font-bold"><?= number_format($product['Price'], 0,'', ',') ?> VNĐ</div>
                                 <?php endif ?>
                             </div>
-                            <a href="add_to_cart.php?id=<?= $product['ID'] ?>" class="block text-center bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 rounded">Thêm vào giỏ</a>
+                            <a href="add_to_cart.php?id=<?= $product['ID'] ?>" class="block text-center bg-black hover:bg-primary-600 text-white font-semibold py-2 rounded">Thêm vào giỏ</a>
                         </div>
                     </div>
                 <?php endforeach ?>
@@ -208,7 +208,7 @@ $newest_products = $pdo->query("
                         <img src="<?= $product['ImageURL'] ? './uploads/products/' . basename($product['ImageURL']) : '/assets/no-image.jpg' ?>" class="w-full h-48 object-cover" alt="<?= htmlspecialchars($product['Title']) ?>">
                         <div class="p-4">
                             <div class="text-sm text-gray-500 mb-1"><?= htmlspecialchars($product['CategoryName']) ?></div>
-                            <h5 class="font-semibold text-lg mb-1"><?= htmlspecialchars($product['Title']) ?></h5>
+                            <h5 class="font-semibold truncate text-lg mb-1"><?= htmlspecialchars($product['Title']) ?></h5>
                             <div class="flex justify-between items-center mb-2">
                                 <?php if($product['DiscountPercent'] > 0): ?>
                                     <div>
@@ -219,7 +219,7 @@ $newest_products = $pdo->query("
                                     <div class="text-gray-900 font-bold"><?= number_format($product['Price'], 0,'', ',') ?> VNĐ</div>
                                 <?php endif ?>
                             </div>
-                            <a href="product.php?id=<?= $product['ID'] ?>" class="block text-center bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 rounded">Xem chi tiết</a>
+                            <a href="product.php?id=<?= $product['ID'] ?>" class="block text-center bg-black hover:bg-primary-600 text-white font-semibold py-2 rounded">Xem chi tiết</a>
                         </div>
                     </div>
                 <?php endforeach ?>
