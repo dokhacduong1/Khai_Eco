@@ -68,63 +68,7 @@ $discountedPrice = $product['Price'] * (1 - $product['DiscountPercent']/100);
     <title><?= htmlspecialchars($product['Title']) ?> - Ecommerce</title>
   
     <style>
-        .product-gallery {
-            position: relative;
-        }
-        .main-image {
-            height: 500px;
-            object-fit: contain;
-            cursor: zoom-in;
-            transition: transform 0.3s;
-        }
-        .thumbnails {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .thumbnail {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-        .thumbnail.active {
-            border-color: #0d6efd;
-        }
-        .product-info {
-            background: #f8f9fa;
-            padding: 2rem;
-            border-radius: 10px;
-        }
-        .original-price {
-            font-size: 1.2rem;
-            color: #6c757d;
-        }
-        .discounted-price {
-            font-size: 2rem;
-            color: #dc3545;
-            font-weight: bold;
-        }
-        .stock-status {
-            font-size: 0.9rem;
-        }
-        .stock-status.in-stock {
-            color: #198754;
-        }
-        .stock-status.out-of-stock {
-            color: #dc3545;
-        }
-        .quantity-input {
-            width: 120px;
-        }
-        .related-product-card {
-            transition: transform 0.3s;
-        }
-        .related-product-card:hover {
-            transform: translateY(-5px);
-        }
+     
     </style>
 </head>
 <body>

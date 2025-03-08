@@ -251,7 +251,18 @@ include 'includes/header.php';
                                     <span><?= number_format($product['Price'], 0,'', ',') ?> VND</span>
                                 <?php endif; ?>
                             </p>
-                            <a href="buy.php?id=<?= $product['ID'] ?>" class="buy-now">Mua ngay</a>
+                            <form action="add_to_cart.php" method="POST" class="d-flex gap-3">
+                                <input type="hidden" name="product_id" value="<?= $product['ID'] ?>">
+                                <input type="hidden" name="quantity" value="1" id="quantityInput">
+                                
+                                <button class="btn btn-primary btn-lg px-5" 
+                                    <?= $product['Stock'] < 1 ? 'disabled' : '' ?> 
+                                    type="submit">
+                                    <i class="fas fa-cart-plus me-2"></i>Thêm vào giỏ
+                                </button>
+                    
+                            </form>
+                           
                         </div>
                     </div>
                 </div>

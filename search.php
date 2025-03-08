@@ -55,80 +55,6 @@ try {
 include 'includes/header.php';
 ?>
 
-<!-- Phần CSS tùy chỉnh -->
-<style>
-    .product-card {
-        position: relative;
-        transition: transform 0.2s, box-shadow 0.2s;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 100%;
-    }
-
-    .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .product-card img {
-        height: 200px;
-        object-fit: cover;
-        border-bottom: 1px solid #ddd;
-    }
-
-    .product-card .card-body {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        padding: 15px;
-    }
-
-    .product-card .badge-discount {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background-color: red;
-        color: white;
-        padding: 5px;
-        border-radius: 5px;
-    }
-
-    .buy-now {
-        background-color: #28a745;
-        color: white;
-        text-align: center;
-        border-radius: 5px;
-        padding: 10px;
-        text-decoration: none;
-        transition: background-color 0.2s;
-        display: block;
-    }
-
-    .buy-now:hover {
-        background-color: #218838;
-    }
-
-    .search-container {
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .search-container .form-group {
-        margin-bottom: 15px;
-    }
-
-    .search-container label {
-        font-weight: bold;
-    }
-
-    .pagination {
-        margin-top: 20px;
-    }
-</style>
-
 <div class="container my-5">
     <h2 class="mb-4">Kết quả tìm kiếm cho: <?= htmlspecialchars($keyword) ?></h2>
 
@@ -146,7 +72,7 @@ include 'includes/header.php';
                     <div class="form-group">
                         <label for="category">Danh mục</label>
                         <select class="form-control" id="category" name="category">
-                            <option value="0">Tất cả</option>
+                            <option value="0">Tất cả danh mục</option>
                             <?php
                             // Lấy danh mục
                             $categoriesStmt = $pdo->prepare("SELECT * FROM Categories");
