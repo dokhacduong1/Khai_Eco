@@ -74,14 +74,7 @@ try {
     
     $productsStmt->execute($params);
     $products = $productsStmt->fetchAll();
-    echo "<pre>";
-echo "Danh sách ID danh mục được truy vấn:\n";
-print_r($categoryIds);
-echo "Số sản phẩm: " . $totalProducts . "\n";
-echo "Câu lệnh SQL:\n" . $productsStmt->queryString . "\n";
-echo "Tham số truyền vào: ";
-print_r($params);
-echo "</pre>";
+   
 } catch (PDOException $e) {
     die("Lỗi hệ thống: " . $e->getMessage());
 }
@@ -98,7 +91,24 @@ include 'includes/header.php';
     <?php else: ?>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             <?php foreach ($products as $product): ?>
-                <!-- Phần hiển thị sản phẩm giữ nguyên -->
+                <div class="col">
+                    <div class="card">
+                        <img  src="<?= $product['ImageURL'] ? 'uploads/products/'.basename($product['ImageURL']) : 'assets/no-image.jpg' ?>" 
+                          
+                             alt="<?= htmlspecialchars($product['Title']) ?>">
+                        <div class="card-body">
+                            <h5 class="card-title"><?= htmlspecialchars($product['Title']) ?></h5>
+                            <p class="card-text">
+                                <?= number_format($product['Price']) ?> VNĐ
+                                <?php if ($product['DiscountPercent'] > 0): ?>
+                                    <span class="ml-3 badge bg-danger"><?= $product['DiscountPercent'] ?>%</span>
+                                <?php endif ?>
+                            </p>
+                            <a href="product.php?id=<?= $product['ID'] ?>" class="btn btn-primary">Xem chi tiết</a>
+                        </div>
+                    </div>
+
+                </div>
             <?php endforeach ?>
         </div>
 

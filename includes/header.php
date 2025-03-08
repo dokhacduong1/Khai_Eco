@@ -13,67 +13,7 @@ $settings = $pdo->query("SELECT KeyName, KeyValue FROM Settings")->fetchAll(PDO:
     <title><?= htmlspecialchars($settings['site_title'] ?? 'Ecommerce') ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
- .dropdown-menu .dropdown-submenu {
-    position: relative;
-}
-
-.dropdown-menu .dropdown-submenu .dropdown-menu {
-    top: 0;
-    left: 100%;
-    margin-top: -1px;
-    margin-left: 0.1rem;
-    display: none;
-}
-
-.dropdown-menu .dropdown-submenu:hover > .dropdown-menu {
-    display: block;
-}
-
-.dropdown-menu .dropdown-submenu .dropdown-toggle::after {
-    content: "▸";
-    float: right;
-    margin-left: 0.5rem;
-    vertical-align: middle;
-    border: none;
-}
-
-@media (min-width: 992px) {
-    .dropdown-menu .dropdown-submenu:hover > .dropdown-menu {
-        display: block;
-    }
-    
-    .dropdown-menu .dropdown-submenu .dropdown-menu {
-        transform: translateY(-10px);
-        opacity: 0;
-        transition: all 0.3s ease;
-        pointer-events: none;
-    }
-    
-    .dropdown-menu .dropdown-submenu:hover > .dropdown-menu {
-        transform: translateY(0);
-        opacity: 1;
-        pointer-events: auto;
-    }
-}
-
-/* Hiệu ứng product card */
-.product-card {
-    transition: transform 0.3s, box-shadow 0.3s;
-    border: 1px solid rgba(0,0,0,0.125);
-}
-
-.product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
-}
-
-/* Responsive hình ảnh */
-.card-img-top {
-    object-fit: contain;
-    padding: 15px;
-}
-    </style>
+    <link rel="stylesheet" href="/webdungai/assets/css/style.css">
 </head>
 <body>
     <!-- Navbar -->
