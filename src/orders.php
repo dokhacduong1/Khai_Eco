@@ -82,7 +82,7 @@ include 'includes/header.php';
                         </td>
                         <td class="py-3 px-4 text-right">
                             <a href="order_detail.php?id=<?= $order['ID'] ?>" 
-                               class="text-blue-500 hover:underline">
+                               class="text-black hover:underline">
                                 Xem chi tiết
                             </a>
                         </td>

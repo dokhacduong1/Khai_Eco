@@ -163,7 +163,7 @@ include 'includes/header.php';
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full bg-blue-500 text-white font-semibold py-3 rounded">Cập nhật</button>
+                    <button type="submit" class="w-full bg-black cursor-pointer text-white font-semibold py-3 rounded">Cập nhật</button>
                 </form>
             </div>
 
@@ -217,7 +217,7 @@ include 'includes/header.php';
                                     </td>
                                     <td class="py-2 px-4 border-b">
                                         <a href="order_detail.php?id=<?= $order['ID'] ?>" 
-                                           class="text-blue-500 hover:underline">
+                                           class="text-black hover:underline">
                                             Chi tiết
                                         </a>
                                     </td>
@@ -227,7 +227,7 @@ include 'includes/header.php';
                         </table>
                     </div>
                     <div class="text-end mt-4">
-                        <a href="orders.php" class="text-blue-500 hover:underline">Xem tất cả</a>
+                        <a href="orders.php" class="text-black hover:underline">Xem tất cả</a>
                     </div>
                 <?php endif ?>
             </div>

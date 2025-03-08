@@ -66,19 +66,16 @@ $discountedPrice = $product['Price'] * (1 - $product['DiscountPercent']/100);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($product['Title']) ?> - Ecommerce</title>
-  
-    <style>
-     
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-gray-100 text-gray-800">
     <?php include 'includes/header.php'; ?>
 
-    <main class="container my-5">
-        <div class="row g-5">
+    <main class="container mx-auto my-8 px-4">
+        <div class="flex flex-col lg:flex-row gap-8">
             <!-- Phần hình ảnh -->
-            <div class="col-lg-6">
-                <div class="product-gallery">
+            <div class="lg:w-1/2">
+                <div class="bg-white p-4 rounded-lg shadow-md">
                     <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-inner">
                             <?php if(empty($images)): ?>
@@ -102,76 +99,75 @@ $discountedPrice = $product['Price'] * (1 - $product['DiscountPercent']/100);
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         </button>
                     </div>
-
-                   
                 </div>
             </div>
 
             <!-- Thông tin sản phẩm -->
-            <div class="col-lg-6">
-                <div class="product-info">
-                    <h1 class="mb-3"><?= htmlspecialchars($product['Title']) ?></h1>
-                    
-                    <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="lg:w-1/2">
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h1 class="text-2xl font-bold mb-4"><?= htmlspecialchars($product['Title']) ?></h1>
+
+                    <div class="flex items-center gap-4 mb-4">
                         <?php if($product['DiscountPercent'] > 0): ?>
-                            <span class="discounted-price">
+                            <span class="text-2xl font-semibold text-red-500">
                                 <?= number_format($discountedPrice, 0,'',',') ?> VNĐ
                             </span>
-                            <del class="original-price">
-                                $<?= number_format($product['Price'], 0,'',',') ?> VNĐ
+                            <del class="text-gray-500">
+                                <?= number_format($product['Price'], 0,'',',') ?> VNĐ
                             </del>
-                            <span class="badge bg-danger">
+                            <span class="bg-red-500 text-white text-sm font-semibold py-1 px-2 rounded">
                                 -<?= $product['DiscountPercent'] ?>%
                             </span>
                         <?php else: ?>
-                            <span class="discounted-price">
-                                $<?= number_format($product['Price'], 2) ?>
+                            <span class="text-2xl font-semibold text-gray-900">
+                                <?= number_format($product['Price'], 0,'',',') ?> VNĐ
                             </span>
                         <?php endif ?>
                     </div>
 
                     <div class="mb-4">
-                        <span class="stock-status <?= $product['Stock'] > 0 ? 'in-stock' : 'out-of-stock' ?>">
-                            <i class="fas fa-<?= $product['Stock'] > 0 ? 'check' : 'times' ?>-circle me-2"></i>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold <?= $product['Stock'] > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' ?>">
+                            <i class="fas fa-<?= $product['Stock'] > 0 ? 'check' : 'times' ?>-circle mr-2"></i>
                             <?= $product['Stock'] > 0 ? 'Còn hàng' : 'Hết hàng' ?>
                         </span>
                     </div>
 
                     <div class="mb-4">
-                        <h5>Mô tả sản phẩm</h5>
-                        <p class="text-muted"><?= nl2br(htmlspecialchars($product['Description'])) ?></p>
+                        <h5 class="text-lg font-semibold">Mô tả sản phẩm</h5>
+                        <p class="text-gray-700"><?= nl2br(htmlspecialchars($product['Description'])) ?></p>
                     </div>
 
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <label>Số lượng</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Số lượng</label>
                             <input type="number" 
-                                   class="form-control quantity-input" 
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
                                    value="1" 
                                    min="1" 
+                                   id="quantityInput"
                                    max="<?= $product['Stock'] ?>"
                                    <?= $product['Stock'] < 1 ? 'disabled' : '' ?>>
                         </div>
-                        <div class="col-md-6">
-                            <label>Danh mục</label>
-                            <div class="form-control bg-white">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Danh mục</label>
+                            <div class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 sm:text-sm">
                                 <?= htmlspecialchars($product['CategoryName'] ?? 'Không phân loại') ?>
                             </div>
                         </div>
                     </div>
 
-                    <form action="add_to_cart.php" method="POST" class="d-flex gap-3">
+                    <form action="add_to_cart.php" method="POST" class="flex gap-4">
                         <input type="hidden" name="product_id" value="<?= $product['ID'] ?>">
-                        <input type="hidden" name="quantity" value="1" id="quantityInput">
+                        <input type="hidden" name="quantity" id="quantityHidden" value="1">
                         
-                        <button class="btn btn-primary btn-lg px-5" 
+                        <button class="bg-blue-500 text-white py-2 px-4 rounded-lg shadow hover:bg-blue-600 disabled:bg-gray-400" 
                             <?= $product['Stock'] < 1 ? 'disabled' : '' ?> 
                             type="submit">
-                            <i class="fas fa-cart-plus me-2"></i>Thêm vào giỏ
+                            <i class="fas fa-cart-plus mr-2"></i>Thêm vào giỏ
                         </button>
                         
-                        <button class="btn btn-outline-secondary btn-lg px-5" type="button">
-                            <i class="fas fa-heart me-2"></i>Yêu thích
+                        <button class="bg-gray-200 text-gray-700 py-2 px-4 rounded-lg shadow hover:bg-gray-300" type="button">
+                            <i class="fas fa-heart mr-2"></i>Yêu thích
                         </button>
                     </form>
                 </div>
@@ -180,34 +176,26 @@ $discountedPrice = $product['Price'] * (1 - $product['DiscountPercent']/100);
 
         <!-- Sản phẩm liên quan -->
         <?php if(!empty($relatedProducts)): ?>
-        <section class="mt-5">
-            <h3 class="mb-4">Sản phẩm liên quan</h3>
-            <div class="row g-4">
+        <section class="mt-8">
+            <h3 class="text-xl font-bold mb-4">Sản phẩm liên quan</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <?php foreach($relatedProducts as $product): ?>
-                <div class="col-md-3">
-                    <div class="card related-product-card h-100">
-                       
-                        <img src="<?= $product['ImageURL'] ? './uploads/products/' . basename($product['ImageURL']) : '/assets/no-image.jpg' ?>" 
-                             class="card-img-top" 
-                             style="height: 200px; object-fit: contain" 
-                             alt="<?= htmlspecialchars($product['Title']) ?>">
-                             <div class="card-body">
-                            <h5 class="card-title"><?= htmlspecialchars($product['Title']) ?></h5>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <?php if($product['DiscountPercent'] > 0): ?>
-                                    <span class="text-danger fs-5">
-                                        <?= number_format($product['Price'] * (1 - $product['DiscountPercent'] / 100), 0, '', ',') ?> VNĐ
-                                    </span>
-                                    <del class="text-muted"><?= number_format($product['Price'], 0, '', ',') ?>  VNĐ</del>
-                                <?php else: ?>
-                                    <span class="fs-5"><?= number_format($product['Price'], 0,'', ',') ?></span>
-                                <?php endif ?>
-                            </div>
-                            <a href="product.php?id=<?= $product['ID'] ?>" class="btn btn-primary mt-2 w-100">
-                                Xem chi tiết
-                            </a>
-                        </div>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <img src="<?= $product['ImageURL'] ? './uploads/products/' . basename($product['ImageURL']) : '/assets/no-image.jpg' ?>" 
+                         class="w-full h-48 object-contain mb-4" 
+                         alt="<?= htmlspecialchars($product['Title']) ?>">
+                    <h5 class="text-lg font-semibold mb-2"><?= htmlspecialchars($product['Title']) ?></h5>
+                    <div class="flex justify-between items-center mb-4">
+                        <?php if($product['DiscountPercent'] > 0): ?>
+                            <span class="text-red-500 font-bold">
+                                <?= number_format($product['Price'] * (1 - $product['DiscountPercent'] / 100), 0, '', ',') ?> VNĐ
+                            </span>
+                            <del class="text-gray-500"><?= number_format($product['Price'], 0, '', ',') ?> VNĐ</del>
+                        <?php else: ?>
+                            <span class="text-gray-900 font-bold"><?= number_format($product['Price'], 0,'', ',') ?> VNĐ</span>
+                        <?php endif ?>
                     </div>
+                    <a href="product.php?id=<?= $product['ID'] ?>" class="block bg-blue-500 text-white text-center py-2 rounded-lg hover:bg-blue-600">Xem chi tiết</a>
                 </div>
                 <?php endforeach ?>
             </div>
@@ -218,6 +206,11 @@ $discountedPrice = $product['Price'] * (1 - $product['DiscountPercent']/100);
     <?php include 'includes/footer.php'; ?>
 
     <script>
+        // Cập nhật số lượng vào input ẩn
+        document.getElementById('quantityInput').addEventListener('input', function() {
+            document.getElementById('quantityHidden').value = this.value;
+        });
+
         // Xử lý thumbnail click
         document.querySelectorAll('.thumbnail').forEach(thumb => {
             thumb.addEventListener('click', () => {

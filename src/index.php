@@ -160,7 +160,7 @@ $newest_products = $pdo->query("
                         <img src="<?= $product['ImageURL'] ? './uploads/products/' . basename($product['ImageURL']) : '/assets/no-image.jpg' ?>" class="w-full h-48 object-cover" alt="<?= htmlspecialchars($product['Title']) ?>">
                         <div class="p-4">
                             <div class="text-sm text-gray-500 mb-1"><?= htmlspecialchars($product['CategoryName']) ?></div>
-                            <h5 class="font-semibold text-lg truncate mb-1"><?= htmlspecialchars($product['Title']) ?></h5>
+                            <a href="product.php?id=<?= $product['ID']?>" class="block font-semibold text-lg truncate mb-1"><?= htmlspecialchars($product['Title']) ?></a>
                             <div class="flex justify-between items-center mb-2">
                                 <?php if($product['DiscountPercent'] > 0): ?>
                                     <div>
@@ -184,9 +184,9 @@ $newest_products = $pdo->query("
                 <div class="relative z-10">
                     <h2 class="text-2xl md:text-4xl font-bold mb-2"><?= htmlspecialchars($settings['promotion_title'] ?? 'Giảm giá lên đến 50%') ?></h2>
                     <p class="mb-4"><?= htmlspecialchars($settings['promotion_description'] ?? 'Khuyến mãi đặc biệt trong tháng này') ?></p>
-                    <a href="products.php?discount=1" class="bg-white text-primary-500 font-bold py-2 px-4 rounded">Mua ngay</a>
+                    <a href="products.php?discount=1" class="bg-white text-black font-bold py-2 px-4 rounded">Mua ngay</a>
                 </div>
-                <div class="absolute inset-0 bg-black bg-opacity-25"></div>
+                <div class="absolute inset-0 bg-black "></div>
             </div>
         </section>
 
@@ -219,7 +219,7 @@ $newest_products = $pdo->query("
                                     <div class="text-gray-900 font-bold"><?= number_format($product['Price'], 0,'', ',') ?> VNĐ</div>
                                 <?php endif ?>
                             </div>
-                            <a href="product.php?id=<?= $product['ID'] ?>" class="block text-center bg-black hover:bg-primary-600 text-white font-semibold py-2 rounded">Xem chi tiết</a>
+                            <a href="product.php?id=<?= $product['ID'] ?>" class="block text-center bg-black hover:bg-black text-white font-semibold py-2 rounded">Xem chi tiết</a>
                         </div>
                     </div>
                 <?php endforeach ?>
