@@ -19,8 +19,14 @@
                     <a class="nav-link" href="reports.php">Reports</a>
                 </li>
                 <li class="nav-item">
-    <a class="nav-link" href="settings.php">Settings</a>
-</li>
+                    <a class="nav-link" href="settings.php">Settings</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="reviews.php">Reviews</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="accounts.php">Accounts</a>
+                </li>
             </ul>
             <a href="logout.php" class="btn btn-outline-light">Logout</a>
         </div>

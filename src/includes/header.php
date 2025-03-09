@@ -563,6 +563,12 @@ if (isset($_SESSION['user_id'])) {
                                         <line x1="12" y1="22.08" x2="12" y2="12"></line>
                                     </svg>
                                 </a>
+                                <a href="wishlist.php" class="shadcn-dropdown-link">
+                                    <span>Yêu thích</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                </a>
                                 <div class="dropdown-divider"></div>
                                 <a href="logout.php" class="shadcn-dropdown-link">
                                     <span>Đăng xuất</span>
@@ -572,6 +578,7 @@ if (isset($_SESSION['user_id'])) {
                                         <line x1="21" y1="12" x2="9" y2="12"></line>
                                     </svg>
                                 </a>
+                               
                             </div>
                         </div>
                     <?php else: ?>

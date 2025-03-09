@@ -157,7 +157,7 @@ include 'includes/header.php';
                     <?php endif; ?>
                     <img src="<?= htmlspecialchars($product['ImageURL']) ?>" class="w-full h-48 object-cover " alt="<?= htmlspecialchars($product['Title']) ?>">
                     <div class="p-4">
-                        <h5 class="font-semibold text-lg truncate" title="<?= htmlspecialchars($product['Title']) ?>"><?= htmlspecialchars($product['Title']) ?></h5>
+                        <a  href="/product.php?id=<?= $product['ID'] ?>" class="font-semibold text-lg truncate block" title="<?= htmlspecialchars($product['Title']) ?>"><?= htmlspecialchars($product['Title']) ?></a>
                         <p class="text-gray-600 truncate"><?= htmlspecialchars($product['Description']) ?></p>
                         <p class="mt-2">
                             <span class="font-semibold">Giá:</span>
