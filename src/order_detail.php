@@ -169,5 +169,24 @@ include 'includes/header.php';
         </div>
     </div>
 </div>
+<?php if ($order['Status'] === 'completed'): ?>
+        <div class="bg-white p-6 rounded shadow mb-6">
+            <h5 class="text-lg font-semibold mb-4">Đánh giá sản phẩm</h5>
+            <form action="submit_review.php" method="POST">
+                <input type="hidden" name="order_id" value="<?= $order_id ?>">
+                <input type="hidden" name="product_id" value="<?= $items[0]['ProductID'] ?>"> <!-- Assuming only one product per order -->
+                <div class="mb-4">
+                    <label for="rating" class="block text-sm font-medium text-gray-700">Đánh giá (1-5 sao)</label>
+                    <input type="number" id="rating" name="rating" min="1" max="5" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+                <div class="mb-4">
+                    <label for="comment" class="block text-sm font-medium text-gray-700">Nhận xét</label>
+                    <textarea id="comment" name="comment" rows="4" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
+                </div>
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Gửi đánh giá</button>
+            </form>
+        </div>
+        <?php endif; ?>
+    </div>
 
 <?php include 'includes/footer.php'; ?>

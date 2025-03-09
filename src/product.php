@@ -52,6 +52,17 @@ try {
     $relatedStmt->execute([$product['CategoryID'], $product['ID']]);
     $relatedProducts = $relatedStmt->fetchAll();
 
+    // Lấy bình luận sản phẩm
+    $commentsStmt = $pdo->prepare("
+        SELECT c.*, u.FullName 
+        FROM Comments c
+        LEFT JOIN Users u ON c.UserID = u.ID
+        WHERE c.ProductID = ?
+        ORDER BY c.CreatedAt DESC
+    ");
+    $commentsStmt->execute([$product['ID']]);
+    $comments = $commentsStmt->fetchAll();
+
 } catch (PDOException $e) {
     die("Error loading product: " . $e->getMessage());
 }
@@ -173,6 +184,31 @@ $discountedPrice = $product['Price'] * (1 - $product['DiscountPercent']/100);
                 </div>
             </div>
         </div>
+
+        <!-- Bình luận sản phẩm -->
+        <section class="mt-8">
+            <h3 class="text-xl font-bold mb-4">Bình luận sản phẩm</h3>
+            <?php if (!empty($comments)): ?>
+                <div class="space-y-4">
+                    <?php foreach ($comments as $comment): ?>
+                        <div class="bg-white p-4 rounded-lg shadow-md">
+                            <div class="flex justify-between items-center mb-2">
+                                <div class="text-sm font-semibold"><?= htmlspecialchars($comment['FullName']) ?></div>
+                                <div class="text-sm text-gray-500"><?= date('d/m/Y H:i', strtotime($comment['CreatedAt'])) ?></div>
+                            </div>
+                            <div class="text-sm text-gray-700"><?= nl2br(htmlspecialchars($comment['CommentText'])) ?></div>
+                            <div class="text-sm text-yellow-500"><?= str_repeat('★', $comment['Rating']) . str_repeat('☆', 5 - $comment['Rating']) ?></div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <div class="text-sm text-gray-700">Chưa có bình luận nào cho sản phẩm này.</div>
+                </div>
+            <?php endif; ?>
+
+         
+        </section>
 
         <!-- Sản phẩm liên quan -->
         <?php if(!empty($relatedProducts)): ?>

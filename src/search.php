@@ -100,7 +100,7 @@ include 'includes/header.php';
                     <?php endif; ?>
                     <img src="<?= htmlspecialchars($product['ImageURL']) ?>" class="w-full h-48 object-cover" alt="<?= htmlspecialchars($product['Title']) ?>">
                     <div class="p-4">
-                        <h5 class="font-semibold truncate text-lg"><?= htmlspecialchars($product['Title']) ?></h5>
+                        <a href="/product.php?id=<?= $product['ID'] ?>" class="font-semibold truncate text-lg block"><?= htmlspecialchars($product['Title']) ?></a>
                         <p class="text-gray-600 truncate"><?= htmlspecialchars($product['Description']) ?></p>
                         <p class="mt-2">
                             <span class="font-semibold">Giá:</span> 

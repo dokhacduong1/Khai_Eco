@@ -60,6 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
+            // Change payment status to completed if order status is delivered
+            if ($newStatus === 'delivered') {
+                $paymentStmt = $pdo->prepare("UPDATE Payments SET Status = 'completed' WHERE OrderID = ?");
+                $paymentStmt->execute([$order['ID']]);
+            }
+
             $pdo->commit();
             $_SESSION['success_message'] = 'Order status updated successfully';
             header('Location: orders.php');
